@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <tx:annotation-driven transaction-manager="txManager" proxy-target-class="true"/>
+
+    <bean id="app" class="ua.goit.java.App">
+        <property name="employeeController" ref="employeeController"/>
+        <property name="dishController" ref="dishController"/>
+        <property name="bookingController" ref="bookingController"/>
+        <property name="storageController" ref="storageController"/>
+    </bean>
+
+
+       <bean id="employeeDao" class="ua.goit.java.model.jdbc.JDBCEmployeeDao">
+              <property name="dataSource" ref="dataSource"/>
+       </bean>
+
+    <bean id="dishDao" class="ua.goit.java.model.jdbc.JDBCDishDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="storageDao" class="ua.goit.java.model.jdbc.JDBCStorageDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="cookedmealsDao" class="ua.goit.java.model.jdbc.JDBCCookedmealsDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="bookingDao" class="ua.goit.java.model.jdbc.JDBCBookingDao">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean class="ua.goit.java.controllers.EmployeeController" id="employeeController">
+        <property name="txManager" ref="txManager"/>
+        <property name="employeeDao" ref="employeeDao"/>
+         <property name="cookedmealsDao" ref="cookedmealsDao"/>
+     </bean>
+    <bean class="ua.goit.java.controllers.DishController" id="dishController">
+        <property name="txManager" ref="txManager"/>
+        <property name="dishDao" ref="dishDao"/>
+    </bean>
+
+    <bean class="ua.goit.java.controllers.BookingController" id="bookingController">
+        <property name="txManager" ref="txManager"/>
+        <property name="bookingDao" ref="bookingDao"/>
+    </bean>
+
+    <bean class="ua.goit.java.controllers.StorageController" id="storageController">
+        <property name="txManager" ref="txManager"/>
+        <property name="storageDao" ref="storageDao"/>
+    </bean>
+
+
+       <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+     <property name="dataSource" ref="dataSource"/>
+      </bean>
+
+
+       <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource">
+              <property name="driverClass" value="${jdbc.driver.class}"/>
+              <property name="jdbcUrl" value="${jdbc.url}"/>
+              <property name="user" value="${jdbc.user}"/>
+              <property name="password" value="${jdbc.password}"/>
+              <property name="minPoolSize" value="${jdbc.min.connections}"/>
+              <property name="maxPoolSize" value="${jdbc.max.connections}"/>
+              <property name="acquireIncrement" value="${jdbc.acquire.increment}"/>
+       </bean>
+
+
+   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+              <property name="location" value="classpath:jdbc.properties"/>
+       </bean>
+</beans>
